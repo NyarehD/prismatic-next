@@ -1,5 +1,5 @@
 # Prismatic Next
-## An experimental full-stack project with NextJS with the help of Prisma.
+### An experimental full-stack project with NextJS with the help of Prisma.
 This is an experimental project to test how can NextJS be full-stack without the help of backend api such as Laravel.
 When deployed, it is going with Planetscale, a MySQL provider. But currently, it is being developed with local MySQL.
 
