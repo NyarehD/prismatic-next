@@ -1,10 +1,12 @@
-import { User } from "@prisma/client";
-import { GetServerSideProps } from "next"
+import { Profile, User } from "@prisma/client";
 import { useRouter } from "next/router";
-import { useState } from "react"
-import prisma from "../../prisma/prisma"
+import { useState } from "react";
+import prisma from "../../prisma/prisma";
+interface AddType extends User {
+  profile?: Profile
+}
 interface Props {
-  users: User[]
+  users: AddType[]
 }
 export default function Users({ users }: Props) {
   const [name, setName] = useState("");
@@ -22,7 +24,6 @@ export default function Users({ users }: Props) {
     const data = await response.json()
 
     router.replace(router.asPath);
-    console.log(data)
   }
   const submitProfile = async (id: number) => {
     const response = await fetch('/api/profile', {
@@ -41,7 +42,7 @@ export default function Users({ users }: Props) {
     <>
       <div className="">
         <h1>Users</h1>
-        <button onClick={submitUsers}>Click me</button>
+        <button onClick={submitUsers} type="button">Click me</button>
         <div className="">
           <input type="text" value={name} onChange={e => setName(e.target.value)} name="name" />
           <input type="text" value={email} onChange={e => setEmail(e.target.value)} name="email" />
