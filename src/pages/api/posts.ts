@@ -7,15 +7,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json(posts)
   }
   if (req.method === "POST") {
-    console.log(req.body.userId);
+    console.log(typeof req.body.description);
 
-    const newPost = await prisma.post.create({
-      data: {
-        description: req.body.description,
-        userId: req.body.userId
-      }
-    })
-    return res.status(200).json({ newPost })
+    if (req.body.description !== "" && req.body.id !== "") {
+      const newPost = await prisma.post.create({
+        data: {
+          description: req.body.description,
+          user: {
+            connectOrCreate: req.body.id
+          }
+        }
+      })
+      return res.status(200).json({ newPost })
+    }
   }
   return res.status(404);
 }

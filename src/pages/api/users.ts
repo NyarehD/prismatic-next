@@ -6,18 +6,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
   if (req.method === "GET") {
     console.log("GET");
     res.status(200).json({ name: "test" });
   } else if (req.method === "POST") {
-    const newUser = await prisma.user.create({
-      data: {
-        name: req.body.name,
-        email: req.body.email,
-      },
-    })
-    return res.status(200).json({ newUser })
+    if (req.body.name && req.body.email) {
+      const newUser = await prisma.user.create({
+        data: {
+          name: req.body.name,
+          email: req.body.email,
+        },
+      })
+      return res.status(200).json({ newUser })
+    }
+    return res.status(400).json({ message: "Cannot create a user" })
   } else {
     return res.status(404);
   }
