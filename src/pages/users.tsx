@@ -1,12 +1,10 @@
-import { Profile, User } from "@prisma/client";
+import { User } from "@prisma/client";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import prisma from "../../prisma/prisma";
-interface AddType extends User {
-  profile?: Profile
-}
 interface Props {
-  users: AddType[]
+  users: User[]
 }
 export default function Users({ users }: Props) {
   const [name, setName] = useState("");
@@ -38,31 +36,71 @@ export default function Users({ users }: Props) {
 
     console.log(data)
   }
+
+
+  // Auth
+  const { data } = useSession();
   return (
     <>
-      <div className="">
-        <h1>Users</h1>
-        <button onClick={submitUsers} type="button">Click me</button>
+      {/* <div className="">
+        <h1 className="text-4xl">users</h1>
+        {
+          session ? <h1>user is logged in </h1> : <h1>user is not logged in</h1>
+        }
+        <button onClick={submitUsers} type="button" className="btn btn-primary ">click me</button>
         <div className="">
           <input type="text" value={name} onChange={e => setName(e.target.value)} name="name" />
           <input type="text" value={email} onChange={e => setEmail(e.target.value)} name="email" />
         </div>
-        {users.map(user => (
-          <div key={user.email}>
-            <h1 key={user.email}>Name: {user.name} Email: {user.email}</h1>
-            <h3>Profile {user.profile?.userId}</h3>
-            <button onClick={() => submitProfile(user.id)}>Add Profile {user.id}</button>
-          </div>
-        ))}
+      </div> */}
+      {/* Form */}
+      <div className="mb-3">
+        <h1 className="mb-3 text-4xl">Users is {data ? "logged in" : "not logged in"}</h1>
+        <form action="/api/users" method="POST">
+          <input type="text" name="name" className="input mr-2" placeholder="Name" />
+          <input type="text" name="email" className="input mr-2" placeholder="Email" />
+          <input type="password" name="password" className="input mr-2" placeholder="Password" />
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+
+      <div className="mb-3">
+        <h1 className="mb-3 text-4xl">Login</h1>
+        <form action="/api/auth/login" method="POST">
+          <input type="text" name="name" className="input mr-2" placeholder="Name" />
+          <input type="password" name="password" className="input mr-2" placeholder="Password" />
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      <button type="button" className="btn btn-warning" onClick={signOut}>Log Out</button>
+      <div className="mx-3 overflow-x-auto">
+        <table className="table w-full">
+          {/* head */}
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>name</th>
+              <th>email</th>
+              <th>password</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user, i) => (
+              <tr className="hover" key={`${user.id}&${i}`}>
+                <th>{user.id}</th>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.password}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   )
 }
 export async function getServerSideProps() {
   const users = await prisma.user.findMany({
-    include: {
-      profile: true
-    }
   });
   return {
     props: {
