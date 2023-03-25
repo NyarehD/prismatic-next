@@ -10,11 +10,12 @@ export default async function handler(
     console.log("GET");
     res.status(200).json({ name: "test" });
   } else if (req.method === "POST") {
-    if (req.body.name && req.body.email) {
+    if (req.body.name && req.body.email && req.body.password) {
       const newUser = await prisma.user.create({
         data: {
           name: req.body.name,
           email: req.body.email,
+          password: req.body.password
         },
       })
       return res.status(200).json({ newUser })
