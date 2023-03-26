@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import ProfileImage from "../public/default.jpg";
@@ -8,7 +8,7 @@ export default function NavBar() {
   return (
     <div className="navbar md:px-10 lg:px-14 px-4 bg-gray-700">
       <div className="navbar-start">
-        <a className="hover:text-white hover:cursor-pointer text-xl font-bold normal-case transition-colors duration-300">CMS System</a>
+        <Link href="/" className="hover:text-white hover:cursor-pointer text-xl font-bold normal-case transition-colors duration-300">CMS System</Link>
       </div>
       <div className="navbar-end md:flex hidden">
         <ul className="inline-flex">
@@ -24,7 +24,7 @@ export default function NavBar() {
                 </div>
               </Link>
               :
-              <li><Link href="/auth/login" className='btn btn-ghost hover:text-white'>Sign In</Link></li>
+              <li><button className="btn btn-ghost" onClick={() => signIn()}>Login</button></li>
           }
         </ul>
         <button className="btn btn-ghost btn-circle">
@@ -54,7 +54,7 @@ export default function NavBar() {
           <ul tabIndex={0} className="menu menu-compact dropdown-content rounded-box w-52 p-2 mt-3 bg-gray-700 shadow">
             <li><Link href="/">Home</Link></li>
             <li><Link href="/users">Users</Link></li>
-            <li><Link href="/auth/login">Sign In</Link></li>
+            <li><Link href="/auth/login">Log In</Link></li>
           </ul>
         </div>
       </div>
