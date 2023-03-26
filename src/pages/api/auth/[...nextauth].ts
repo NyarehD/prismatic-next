@@ -1,8 +1,7 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import checkPassword from "../../../../lib/checkPassword";
 import prisma from "../../../../prisma/prisma";
 
 export const authOptions: NextAuthOptions = {
@@ -18,7 +17,7 @@ export const authOptions: NextAuthOptions = {
             name: credentials?.username
           }
         })
-        if (user && user.password === credentials?.password) {
+        if (user && await checkPassword(credentials?.password, user.password)) {
           return user
         } else {
           return null
