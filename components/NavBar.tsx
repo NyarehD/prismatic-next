@@ -16,13 +16,15 @@ export default function NavBar() {
           <li><Link href="/users" className='btn btn-ghost hover:text-white'>Users</Link></li>
           {
             (data) ?
-              <Link href="/">
-                <div className="avatar btn btn-circle btn-ghost">
-                  <div className="w-10 h-10 rounded-full">
-                    <Image src={ProfileImage} alt="" />
+              <li>
+                <Link href="/">
+                  <div className="avatar btn btn-circle btn-ghost">
+                    <div className="w-10 h-10 rounded-full">
+                      <Image src={ProfileImage} alt="" />
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </li>
               :
               <li><button className="btn btn-ghost" onClick={() => signIn()}>Login</button></li>
           }

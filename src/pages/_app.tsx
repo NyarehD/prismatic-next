@@ -12,7 +12,7 @@ export default function App({
     <SessionProvider session={session}>
       <div className="bg-neutral-900 min-h-screen">
         <NavBar />
-        <div className="md:px-10 lg:px-14 max-w-screen-xl px-4 py-6 mx-auto">
+        <div className="md:px-10 lg:px-14 min-w-screen-xl px-4 py-6 mx-auto">
           <Component {...pageProps} />
         </div>
       </div>

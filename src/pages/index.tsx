@@ -1,7 +1,9 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import { signIn } from 'next-auth/react';
+import { Inter } from 'next/font/google';
+import Head from 'next/head';
+import Image from 'next/image';
+import ProfileImage from "../../public/default.jpg";
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,6 +16,16 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div className="hero bg-base-200 min-h-[calc(100vh-4rem)]">
+        <div className="hero-content lg:flex-row-reverse flex-col p-0">
+          <Image src={ProfileImage} alt="Hero Photo" className="md:w-1/2 w-full" />
+          <div className="md:w-1/2 w-full p-4">
+            <h1 className="text-4xl font-bold">User Management System</h1>
+            <p className="py-6">A fullstack web application to manage users in organizations</p>
+            <button className="btn btn-primary" onClick={() => signIn()}>Login</button>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
