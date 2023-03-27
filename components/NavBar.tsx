@@ -1,4 +1,4 @@
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import ProfileImage from "../public/default.jpg";
@@ -17,13 +17,20 @@ export default function NavBar() {
           {
             (data) ?
               <li>
-                <Link href="/">
-                  <div className="avatar btn btn-circle btn-ghost">
-                    <div className="w-10 h-10 rounded-full">
-                      <Image src={ProfileImage} alt="" />
-                    </div>
+                <div className="flex items-stretch">
+                  <div className="dropdown dropdown-end">
+                    <Link href="/" tabIndex={0}>
+                      <div className="avatar btn btn-circle btn-ghost">
+                        <div className="w-10 h-10 rounded-full">
+                          <Image src={ProfileImage} alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-box w-52 p-2 mt-4 shadow">
+                      <li><button type="button" className="" onClick={signOut}>Log Out</button></li>
+                    </ul>
                   </div>
-                </Link>
+                </div>
               </li>
               :
               <>
