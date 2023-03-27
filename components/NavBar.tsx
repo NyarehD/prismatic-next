@@ -13,7 +13,7 @@ export default function NavBar() {
       <div className="navbar-end md:flex hidden">
         <ul className="inline-flex">
           <li><Link href="/" className='btn btn-ghost hover:text-white'>Home</Link></li>
-          <li><Link href="/users" className='btn btn-ghost hover:text-white'>Users</Link></li>
+          <li><Link href="/user/users" className='btn btn-ghost hover:text-white'>Users</Link></li>
           {
             (data) ?
               <li>
@@ -27,7 +27,7 @@ export default function NavBar() {
                       </div>
                     </Link>
                     <ul tabIndex={0} className="menu dropdown-content bg-base-100 rounded-box w-52 p-2 mt-4 shadow">
-                      <li><button type="button" className="" onClick={signOut}>Log Out</button></li>
+                      <li><button type="button" className="hover:bg-warning hover:text-black" onClick={() => signOut()}>Log Out</button></li>
                     </ul>
                   </div>
                 </div>
@@ -35,7 +35,7 @@ export default function NavBar() {
               :
               <>
                 <li><Link href="/auth/register" className="btn btn-ghost">Register</Link></li>
-                <li><button className="btn btn-ghost" onClick={() => signIn()}>Login</button></li>
+                <li><Link href="/auth/login" className="btn btn-ghost">Login</Link></li>
               </>
           }
         </ul>
@@ -65,7 +65,7 @@ export default function NavBar() {
           </label>
           <ul tabIndex={0} className="menu menu-compact dropdown-content rounded-box w-52 p-2 mt-3 bg-gray-700 shadow">
             <li><Link href="/">Home</Link></li>
-            <li><Link href="/users">Users</Link></li>
+            <li><Link href="/user/users">Users</Link></li>
             <li><Link href="/auth/login">Log In</Link></li>
           </ul>
         </div>
