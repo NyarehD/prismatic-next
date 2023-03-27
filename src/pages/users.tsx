@@ -80,6 +80,7 @@ export default function Users({ users }: Props) {
             <tr>
               <th>id</th>
               <th>name</th>
+              <th>username</th>
               <th>email</th>
               <th>password</th>
             </tr>
@@ -89,6 +90,7 @@ export default function Users({ users }: Props) {
               <tr className="hover" key={`${user.id}&${i}`}>
                 <th>{user.id}</th>
                 <td>{user.name}</td>
+                <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{user.password}</td>
               </tr>
