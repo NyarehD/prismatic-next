@@ -23,8 +23,6 @@ export default async function handler(
 
     case "POST":
       const { error, value } = formSchema.validate(req.body)
-      console.log(value);
-
       if (!error) {
         try {
           const newUser = await prisma.user.create({
