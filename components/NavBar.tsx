@@ -26,7 +26,10 @@ export default function NavBar() {
                 </Link>
               </li>
               :
-              <li><button className="btn btn-ghost" onClick={() => signIn()}>Login</button></li>
+              <>
+                <li><Link href="/auth/register" className="btn btn-ghost">Register</Link></li>
+                <li><button className="btn btn-ghost" onClick={() => signIn()}>Login</button></li>
+              </>
           }
         </ul>
         <button className="btn btn-ghost btn-circle">
