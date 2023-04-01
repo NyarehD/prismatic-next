@@ -30,6 +30,8 @@ export default function NavBar() {
         <ul className="inline-flex">
           <li><Link href="/" className='btn btn-ghost hover:text-white'>Home</Link></li>
           <li><Link href="/user/users" className='btn btn-ghost hover:text-white'>Users</Link></li>
+          <li><Link href="/category" className='btn btn-ghost hover:text-white'>Category</Link></li>
+
           {
             (data) ?
               <li><ProfileIcon /></li>
@@ -72,6 +74,7 @@ export default function NavBar() {
           <ul tabIndex={0} className="menu menu-compact dropdown-content rounded-box w-52 p-2 mt-3 bg-gray-700 shadow">
             <li><Link href="/">Home</Link></li>
             <li><Link href="/user/users">Users</Link></li>
+            <li><Link href="/category" className='btn btn-ghost hover:text-white'>Category</Link></li>
             {!data && (
               <>
                 <li><Link href="/auth/login">Log In</Link></li>
