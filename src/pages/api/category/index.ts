@@ -14,7 +14,16 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      const categories = prisma.category.findMany();
+      console.log(req.query);
+      let categories;
+      if (req.query) {
+        categories = await prisma.category.findMany({
+          skip: (Number(req.query.page) - 1) * Number(req.query.limit),
+          take: Number(req.query.limit),
+        })
+      } else {
+        categories = prisma.category.findMany();
+      }
       res.status(200).json(categories);
       break;
 
