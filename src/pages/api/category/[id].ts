@@ -11,13 +11,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
+  let category;
   switch (req.method) {
+    case "GET":
+      category = await prisma.category.findUnique({
+        where: {
+          id: Number(req.query.id)
+        }
+      })
+      return res.status(200).json(category);
     case "PATCH":
 
       break;
     case "DELETE":
-      const category = await prisma.category.delete({
+      category = await prisma.category.delete({
         where: {
           id: Number(req.query.id)
         }
