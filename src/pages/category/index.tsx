@@ -157,6 +157,7 @@ export default function Categories({ categories, pageCount }: Props) {
 }
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const take = 8;
+  const pageCount = Math.ceil((await prisma.category.findMany()).length / take)
 
   const categories = await prisma.category.findMany({
     take,
@@ -180,7 +181,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       categories: JSON.parse(JSON.stringify(categories)),
-      pageCount: await usePageCount(take)
+      pageCount
     }
   }
 }
