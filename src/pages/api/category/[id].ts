@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import Joi from 'joi';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../../prisma/prisma';
@@ -21,7 +22,27 @@ export default async function handler(
       })
       return res.status(200).json(category);
     case "PATCH":
+      const { error, value } = formSchema.validate(req.body)
 
+      if (!error) {
+        try {
+          category = await prisma.category.update({
+            where: {
+              id: Number(req.query.id)
+            },
+            data: {
+              name: value.name
+            }
+          })
+          res.status(200).json({ message: "Category is updated" })
+        } catch (e) {
+          if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            if (e.code === "P2002") {
+              return res.status(400).json({ message: "Cannot update category" })
+            }
+          }
+        }
+      }
       break;
     case "DELETE":
       category = await prisma.category.delete({

@@ -31,7 +31,8 @@ interface Props {
 }
 export default function Categories({ categories, pageCount }: Props) {
   const [categoryName, setCategoryName] = useState("")
-  const modelButtonRef = useRef<HTMLLabelElement>(null);
+  const modelCreateButtonRef = useRef<HTMLLabelElement>(null);
+  const modelUpdateButtonRef = useRef<HTMLLabelElement>(null);
 
   const router = useRouter()
 
@@ -45,7 +46,7 @@ export default function Categories({ categories, pageCount }: Props) {
     })
     if (response.status === 200) {
       setToast("Category is created successfully", "success");
-      modelButtonRef.current?.click();
+      modelCreateButtonRef.current?.click();
       router.replace(router.asPath);
       setCategoryName("");
     } else if (response.status === 400) {
@@ -63,17 +64,39 @@ export default function Categories({ categories, pageCount }: Props) {
     }
   }
 
-  function changePagination(page: number) {
-    if (page > 0) {
-      router.push(`${router.route}?page=${page}`)
+  const { setToast, ...toastState } = useToast()
+
+  // Edit a category
+  const [editCategoryName, setEditCategoryName] = useState("")
+  const [editingCategoryId, setEditingCategoryId] = useState<number>(0)
+
+  function updateCategoryModal(name: string, id: number) {
+    setEditCategoryName(name);
+    setEditingCategoryId(id);
+  }
+
+  async function updateCategory(id: number) {
+    const response = await fetch(`/api/category/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ name: editCategoryName }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (response.status === 200) {
+      setToast("Category is updated successfully", "success");
+      modelUpdateButtonRef.current?.click();
+      router.replace(router.asPath);
+      setEditCategoryName("");
+    } else if (response.status === 400) {
     }
   }
-  const { setToast, ...toastState } = useToast()
+
   return (
     <>
       <div className="flex justify-between mb-3">
         <h1 className="text-3xl font-semibold">Category List</h1>
-        <label htmlFor="category-create-model" className="btn btn-success" ref={modelButtonRef}>Add Category<AddIcon /></label>
+        <label htmlFor="category-create-modal" className="btn btn-success" ref={modelCreateButtonRef}>Add Category<AddIcon /></label>
       </div>
       <div className="overflow-x-auto">
         <table className="table w-full mb-3">
@@ -95,7 +118,7 @@ export default function Categories({ categories, pageCount }: Props) {
                 <td>{category.name}</td>
                 <td>{category?._count?.item}</td>
                 <td>
-                  <label htmlFor="category-update-modal" className="btn btn-square btn-sm btn-info mr-2" onClick={() => updateCategoryModal(category.name, category.id)}><PencilIcon /></label>
+                  <label htmlFor="category-update-modal" className="btn btn-square btn-sm btn-info mr-2" onClick={() => updateCategoryModal(category.name, category.id)} ref={modelUpdateButtonRef}><PencilIcon /></label>
                   <button className="btn btn-square btn-sm btn-error mr-2" onClick={() => deleteCategory(category.id)}><TrashIcon /></button>
                 </td>
                 <td>{category.createdAt}</td>
@@ -113,9 +136,9 @@ export default function Categories({ categories, pageCount }: Props) {
 
       {/* Model to create category */}
       <Modal id="category-create-modal">
-          <h3 className="text-lg font-bold">Add a New Category</h3>
+        <h3 className="text-lg font-bold">Add a New Category</h3>
         <input type="text" name="name" id="name" className="input input-bordered w-full mt-3" placeholder="Add New Category" value={categoryName} onChange={e => setCategoryName(e.target.value)} />
-          <button className="btn btn-success float-right mt-3" type="button" onClick={addCategory}>Add <AddIcon /></button>
+        <button className="btn btn-success float-right mt-3" type="button" onClick={addCategory}>Add <AddIcon /></button>
       </Modal>
 
       {/* Modal to edit category */}

@@ -40,7 +40,7 @@ export default async function handler(
         } catch (e) {
           if (e instanceof Prisma.PrismaClientKnownRequestError) {
             if (e.code === "P2002") {
-              return res.status(400).json({ message: "User name is already exist" })
+              return res.status(400).json({ message: "Category is already exist" })
             }
           }
         }
