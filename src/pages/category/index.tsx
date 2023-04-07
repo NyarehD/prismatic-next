@@ -2,14 +2,15 @@ import { Prisma } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
+import Modal from "../../../components/Modal";
 import Pagination from "../../../components/Pagination";
 import Toast from "../../../components/Toast";
 import AddIcon from "../../../components/icons/AddIcon";
 import PencilIcon from "../../../components/icons/PencilIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
+import usePageCount from "../../../hooks/usePageCount";
 import useToast from "../../../hooks/useToast";
 import prisma from "../../../prisma/prisma";
-import usePageCount from "../../../hooks/usePageCount";
 
 interface ModifiedCategory extends Omit<Prisma.CategoryGetPayload<{
   select: {
@@ -29,7 +30,7 @@ interface Props {
   pageCount: number
 }
 export default function Categories({ categories, pageCount }: Props) {
-  const [name, setName] = useState("")
+  const [categoryName, setCategoryName] = useState("")
   const modelButtonRef = useRef<HTMLLabelElement>(null);
 
   const router = useRouter()
@@ -37,7 +38,7 @@ export default function Categories({ categories, pageCount }: Props) {
   async function addCategory() {
     const response = await fetch('/api/category', {
       method: 'POST',
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name: categoryName }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -46,10 +47,11 @@ export default function Categories({ categories, pageCount }: Props) {
       setToast("Category is created successfully", "success");
       modelButtonRef.current?.click();
       router.replace(router.asPath);
-      setName("");
+      setCategoryName("");
     } else if (response.status === 400) {
     }
   }
+
   async function deleteCategory(id: number) {
     const response = await fetch(`/api/category/${id}`, {
       method: 'DELETE',
@@ -93,7 +95,7 @@ export default function Categories({ categories, pageCount }: Props) {
                 <td>{category.name}</td>
                 <td>{category?._count?.item}</td>
                 <td>
-                  <button className="btn btn-square btn-sm btn-info mr-2" ><PencilIcon /></button>
+                  <label htmlFor="category-update-modal" className="btn btn-square btn-sm btn-info mr-2" onClick={() => updateCategoryModal(category.name, category.id)}><PencilIcon /></label>
                   <button className="btn btn-square btn-sm btn-error mr-2" onClick={() => deleteCategory(category.id)}><TrashIcon /></button>
                 </td>
                 <td>{category.createdAt}</td>
@@ -110,15 +112,18 @@ export default function Categories({ categories, pageCount }: Props) {
       <Pagination pageCount={pageCount} />
 
       {/* Model to create category */}
-      <input type="checkbox" id="category-create-model" className="modal-toggle" />
-      <label htmlFor="category-create-model" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
+      <Modal id="category-create-modal">
           <h3 className="text-lg font-bold">Add a New Category</h3>
-          <label htmlFor="category-create-model" className="btn btn-sm btn-square right-5 top-5 absolute">✕</label>
-          <input type="text" name="name" id="name" className="input input-bordered w-full mt-3" placeholder="Add New Category" value={name} onChange={e => setName(e.target.value)} />
+        <input type="text" name="name" id="name" className="input input-bordered w-full mt-3" placeholder="Add New Category" value={categoryName} onChange={e => setCategoryName(e.target.value)} />
           <button className="btn btn-success float-right mt-3" type="button" onClick={addCategory}>Add <AddIcon /></button>
-        </label>
-      </label>
+      </Modal>
+
+      {/* Modal to edit category */}
+      <Modal id="category-update-modal">
+        <h3 className="text-lg font-bold">Edit a Category</h3>
+        <input type="text" name="categoryUpdate" id="categoryUpdate" className="input input-bordered w-full mt-3" placeholder="Edit Category" value={editCategoryName} onChange={e => setEditCategoryName(e.target.value)} />
+        <button className="btn btn-success float-right mt-3" type="button" onClick={() => updateCategory(editingCategoryId)}>Edit <PencilIcon /></button>
+      </Modal>
       <Toast {...toastState} />
     </>
   )
