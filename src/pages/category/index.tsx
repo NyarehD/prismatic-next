@@ -1,14 +1,31 @@
-import ErrorMessage from "@/types/ErrorMessage.type";
-import { Prisma } from "@prisma/client";
+import { Category, Prisma, PrismaClient } from "@prisma/client";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
 import Toast from "../../../components/Toast";
 import AddIcon from "../../../components/icons/AddIcon";
-import TrashIcon from "../../../components/icons/TrashIcon";
-import prisma from "../../../prisma/prisma";
+import LeftIcon from "../../../components/icons/LeftIcon";
 import PencilIcon from "../../../components/icons/PencilIcon";
+import RightIcon from "../../../components/icons/RightIcon";
+import TrashIcon from "../../../components/icons/TrashIcon";
+import useToast from "../../../hooks/useToast";
+import prisma from "../../../prisma/prisma";
+
+interface ModifiedCategory extends Omit<Prisma.CategoryGetPayload<{
+  select: {
+    _count: true,
+    name: true,
+    id: true,
+    item: true,
+    createdAt: true,
+    updatedAt: true,
+  }
+}>, "createdAt" | "updatedAt"> {
+  createdAt: string,
+  updatedAt: string
+}
 interface Props {
-  categories: Prisma.CategorySelect[]
+  categories: ModifiedCategory[]
 }
 export default function Categories({ categories }: Props) {
   const [name, setName] = useState("")
@@ -98,9 +115,10 @@ export default function Categories({ categories }: Props) {
     </>
   )
 }
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const categories = await prisma.category.findMany({
-    select: {
+    take: 8,
+    skip: context.query?.page ? (Number(context.query?.page) - 1) * 8 : 0, select: {
       _count: true,
       name: true,
       id: true,
@@ -112,8 +130,6 @@ export async function getServerSideProps() {
   categories.map(category => {
     const newCreatedDate = new Date(category.createdAt);
     const newUpdatedDate = new Date(category.createdAt);
-    console.log(typeof newCreatedDate);
-
     return {
       ...category, createdAt: newCreatedDate.toLocaleString(), updatedAt: newUpdatedDate.toLocaleString()
     }
