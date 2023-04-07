@@ -1,15 +1,15 @@
-import { Category, Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
+import Pagination from "../../../components/Pagination";
 import Toast from "../../../components/Toast";
 import AddIcon from "../../../components/icons/AddIcon";
-import LeftIcon from "../../../components/icons/LeftIcon";
 import PencilIcon from "../../../components/icons/PencilIcon";
-import RightIcon from "../../../components/icons/RightIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
 import useToast from "../../../hooks/useToast";
 import prisma from "../../../prisma/prisma";
+import usePageCount from "../../../hooks/usePageCount";
 
 interface ModifiedCategory extends Omit<Prisma.CategoryGetPayload<{
   select: {
@@ -26,8 +26,9 @@ interface ModifiedCategory extends Omit<Prisma.CategoryGetPayload<{
 }
 interface Props {
   categories: ModifiedCategory[]
+  pageCount: number
 }
-export default function Categories({ categories }: Props) {
+export default function Categories({ categories, pageCount }: Props) {
   const [name, setName] = useState("")
   const modelButtonRef = useRef<HTMLLabelElement>(null);
 
@@ -59,6 +60,12 @@ export default function Categories({ categories }: Props) {
     } else if (response.status === 404) {
     }
   }
+
+  function changePagination(page: number) {
+    if (page > 0) {
+      router.push(`${router.route}?page=${page}`)
+    }
+  }
   const { setToast, ...toastState } = useToast()
   return (
     <>
@@ -67,7 +74,7 @@ export default function Categories({ categories }: Props) {
         <label htmlFor="category-create-model" className="btn btn-success" ref={modelButtonRef}>Add Category<AddIcon /></label>
       </div>
       <div className="overflow-x-auto">
-        <table className="table w-full">
+        <table className="table w-full mb-3">
           {/* head */}
           <thead>
             <tr>
@@ -100,6 +107,7 @@ export default function Categories({ categories }: Props) {
           </tbody>
         </table>
       </div>
+      <Pagination pageCount={pageCount} />
 
       {/* Model to create category */}
       <input type="checkbox" id="category-create-model" className="modal-toggle" />
@@ -116,9 +124,12 @@ export default function Categories({ categories }: Props) {
   )
 }
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const take = 8;
+
   const categories = await prisma.category.findMany({
-    take: 8,
-    skip: context.query?.page ? (Number(context.query?.page) - 1) * 8 : 0, select: {
+    take,
+    skip: context.query?.page ? (Number(context.query?.page) - 1) * 8 : 0,
+    select: {
       _count: true,
       name: true,
       id: true,
@@ -136,7 +147,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   })
   return {
     props: {
-      categories: JSON.parse(JSON.stringify(categories))
+      categories: JSON.parse(JSON.stringify(categories)),
+      pageCount: await usePageCount(take)
     }
   }
 }
