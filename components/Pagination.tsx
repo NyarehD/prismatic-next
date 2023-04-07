@@ -7,7 +7,7 @@ interface PaginationProps {
 }
 export default function Pagination({ pageCount }: PaginationProps) {
   const router = useRouter();
-  const page = Number(router.query?.page);
+  const page = Number(router.query?.page || 1);
   function changePagination(page: number) {
     if (page > 0 && page <= pageCount) {
       router.push(`${router.route}?page=${page}`)
