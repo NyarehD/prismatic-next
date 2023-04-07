@@ -12,13 +12,7 @@ interface Props {
 }
 export default function Categories({ categories }: Props) {
   const [name, setName] = useState("")
-  const [errorStatus, setErrorStatus] = useState(false)
-  const [errorMessages, setErrorMessages] = useState<ErrorMessage[]>([]);
-
   const modelButtonRef = useRef<HTMLLabelElement>(null);
-
-  const [isCreateToastShown, setIsCreateToastShown] = useState(false);
-  const [isErrorToastShown, setIsErrorToastShown] = useState(false);
 
   const router = useRouter()
 
@@ -31,12 +25,11 @@ export default function Categories({ categories }: Props) {
       }
     })
     if (response.status === 200) {
-      setIsCreateToastShown(true)
+      setToast("Category is created successfully", "success");
       modelButtonRef.current?.click();
       router.replace(router.asPath);
       setName("");
     } else if (response.status === 400) {
-
     }
   }
   async function deleteCategory(id: number) {
@@ -44,13 +37,12 @@ export default function Categories({ categories }: Props) {
       method: 'DELETE',
     })
     if (response.status === 200) {
+      setToast("Category is deleted successfully", "info")
       router.replace(router.asPath);
     } else if (response.status === 404) {
-      console.log(response.status);
-
-      setIsErrorToastShown(true)
     }
   }
+  const { setToast, ...toastState } = useToast()
   return (
     <>
       <div className="flex justify-between mb-3">
@@ -102,9 +94,7 @@ export default function Categories({ categories }: Props) {
           <button className="btn btn-success float-right mt-3" type="button" onClick={addCategory}>Add <AddIcon /></button>
         </label>
       </label>
-
-      <Toast color="success" isShown={isCreateToastShown} setIsShown={setIsCreateToastShown}>A category is created successfully.</ Toast>
-      <Toast color="error" isShown={isErrorToastShown} setIsShown={setIsErrorToastShown}>Cannot Delete a category</Toast>
+      <Toast {...toastState} />
     </>
   )
 }
