@@ -8,18 +8,13 @@ import Toast from "../../../components/Toast";
 import AddIcon from "../../../components/icons/AddIcon";
 import PencilIcon from "../../../components/icons/PencilIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
-import usePageCount from "../../../hooks/usePageCount";
 import useToast from "../../../hooks/useToast";
 import prisma from "../../../prisma/prisma";
+import useChangeDateFormat from "../../../hooks/useChangeDateFormat";
 
 interface ModifiedCategory extends Omit<Prisma.CategoryGetPayload<{
-  select: {
-    _count: true,
-    name: true,
-    id: true,
-    item: true,
-    createdAt: true,
-    updatedAt: true,
+  include: {
+    _count: true
   }
 }>, "createdAt" | "updatedAt"> {
   createdAt: string,
@@ -110,9 +105,9 @@ export default function Categories({ categories, pageCount }: Props) {
               <th>id</th>
               <th>name</th>
               <th>Total</th>
-              <th>Actions</th>
               <th>Created At</th>
               <th>Updated At</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -121,12 +116,12 @@ export default function Categories({ categories, pageCount }: Props) {
                 <th>{category.id}</th>
                 <td>{category.name}</td>
                 <td>{category?._count?.item}</td>
+                <td>{category.createdAt}</td>
+                <td>{category.updatedAt}</td>
                 <td>
                   <label htmlFor="category-update-modal" className="btn btn-square btn-sm btn-info mr-2" onClick={() => updateCategoryModal(category.name, category.id)} ref={modelUpdateButtonRef}><PencilIcon /></label>
                   <button className="btn btn-square btn-sm btn-error mr-2" onClick={() => deleteCategory(category.id)}><TrashIcon /></button>
                 </td>
-                <td>{category.createdAt}</td>
-                <td>{category.updatedAt}</td>
               </tr>
             )) : (
               <tr>
@@ -136,7 +131,9 @@ export default function Categories({ categories, pageCount }: Props) {
           </tbody>
         </table>
       </div>
-      <Pagination pageCount={pageCount} />
+      {
+        categories.length !== 0 && <Pagination pageCount={pageCount} />
+      }
 
       {/* Model to create category */}
       <Modal id="category-create-modal">
@@ -162,25 +159,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const categories = await prisma.category.findMany({
     take,
     skip: context.query?.page ? (Number(context.query?.page) - 1) * 8 : 0,
-    select: {
+    include: {
       _count: true,
-      name: true,
-      id: true,
-      item: true,
-      createdAt: true,
-      updatedAt: true
-    },
-  })
-  categories.map(category => {
-    const newCreatedDate = new Date(category.createdAt);
-    const newUpdatedDate = new Date(category.createdAt);
-    return {
-      ...category, createdAt: newCreatedDate.toLocaleString(), updatedAt: newUpdatedDate.toLocaleString()
     }
   })
+
+  // Mutate date in categories
+  const modifiedCategories = categories.map(category => {
+    return {
+      ...category,
+      createdAt: useChangeDateFormat(category.createdAt),
+      updatedAt: useChangeDateFormat(category.updatedAt)
+    }
+  })
+
   return {
     props: {
-      categories: JSON.parse(JSON.stringify(categories)),
+      categories: JSON.parse(JSON.stringify(modifiedCategories)),
       pageCount
     }
   }
