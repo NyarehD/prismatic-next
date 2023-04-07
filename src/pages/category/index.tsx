@@ -30,11 +30,15 @@ interface Props {
   pageCount: number
 }
 export default function Categories({ categories, pageCount }: Props) {
-  const [categoryName, setCategoryName] = useState("")
+  const router = useRouter()
+  const { setToast, ...toastState } = useToast()
+
+  // Refs
   const modelCreateButtonRef = useRef<HTMLLabelElement>(null);
   const modelUpdateButtonRef = useRef<HTMLLabelElement>(null);
 
-  const router = useRouter()
+  // Create New Category
+  const [categoryName, setCategoryName] = useState("")
 
   async function addCategory() {
     const response = await fetch('/api/category', {
@@ -53,6 +57,7 @@ export default function Categories({ categories, pageCount }: Props) {
     }
   }
 
+  // Delete category
   async function deleteCategory(id: number) {
     const response = await fetch(`/api/category/${id}`, {
       method: 'DELETE',
@@ -64,7 +69,6 @@ export default function Categories({ categories, pageCount }: Props) {
     }
   }
 
-  const { setToast, ...toastState } = useToast()
 
   // Edit a category
   const [editCategoryName, setEditCategoryName] = useState("")
@@ -84,7 +88,7 @@ export default function Categories({ categories, pageCount }: Props) {
       }
     })
     if (response.status === 200) {
-      setToast("Category is updated successfully", "success");
+      setToast(`Category is updated successfully`, "success");
       modelUpdateButtonRef.current?.click();
       router.replace(router.asPath);
       setEditCategoryName("");
