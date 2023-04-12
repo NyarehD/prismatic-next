@@ -8,9 +8,11 @@ import Toast from "../../../components/Toast";
 import AddIcon from "../../../components/icons/AddIcon";
 import PencilIcon from "../../../components/icons/PencilIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
+import useChangeDateFormat from "../../../hooks/useChangeDateFormat";
 import useToast from "../../../hooks/useToast";
 import prisma from "../../../prisma/prisma";
-import useChangeDateFormat from "../../../hooks/useChangeDateFormat";
+import getAuthUser from "../../../server_hooks/getAuthUser";
+import getPageSkip from "../../../server_hooks/getPageSkip";
 
 interface ModifiedCategory extends Omit<Prisma.CategoryGetPayload<{
   include: {
@@ -156,12 +158,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const take = 8;
   const pageCount = Math.ceil((await prisma.category.findMany()).length / take)
 
+  const user = await getAuthUser(context.req, context.res);
+
   const categories = await prisma.category.findMany({
     take,
-    skip: context.query?.page ? (Number(context.query?.page) - 1) * 8 : 0,
-    include: {
-      _count: true,
-    }
+    skip: getPageSkip(Number(context.query?.page), take),
+    where: {
+      userId: user?.id
+    },
   })
 
   // Mutate date in categories
