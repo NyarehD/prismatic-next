@@ -51,6 +51,8 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  item     Item[]
+  category Category[]
 }
 
 model VerificationToken {
@@ -70,7 +72,11 @@ model Item {
   category   Category? @relation(fields: [categoryId], references: [id])
   categoryId Int?
 
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
   @@index([categoryId])
+  @@index([userId])
 }
 
 model Category {
@@ -80,4 +86,9 @@ model Category {
   updatedAt DateTime @updatedAt
 
   item Item[]
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  @@index([userId])
 }
