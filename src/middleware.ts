@@ -11,7 +11,9 @@ export function middleware(request: NextRequest) {
    * If not redirect to login
    */
   if (request.nextUrl.pathname.startsWith("/category") || request.nextUrl.pathname.startsWith("/item")) {
-    return !request.cookies.get("next-auth.session-token") && NextResponse.redirect(new URL("/auth/login", request.url))
+    if (!request.cookies.get("next-auth.session-token")) {
+      return NextResponse.redirect(new URL("/auth/login", request.url))
+    }
   }
 }
 export const config = {
