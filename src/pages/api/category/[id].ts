@@ -5,7 +5,7 @@ import prisma from '../../../../prisma/prisma';
 
 // Form Validation Schema
 const formSchema = Joi.object({
-  name: Joi.string().min(3).required(),
+  name: Joi.string().min(3).max(24).required(),
 })
 
 export default async function handler(
@@ -42,6 +42,8 @@ export default async function handler(
             }
           }
         }
+      } else {
+        return res.status(400).json(error);
       }
       break;
     case "DELETE":

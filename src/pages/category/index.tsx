@@ -51,6 +51,8 @@ export default function Categories({ categories, pageCount }: Props) {
       router.replace(router.asPath);
       setCategoryName("");
     } else if (response.status === 400) {
+      const message = await response.json();
+      setToast(message.details[0].message, "warning")
     }
   }
 
@@ -90,6 +92,9 @@ export default function Categories({ categories, pageCount }: Props) {
       router.replace(router.asPath);
       setEditCategoryName("");
     } else if (response.status === 400) {
+    } else if (response.status === 400) {
+      const message = await response.json();
+      setToast(message.details[0].message, "warning")
     }
   }
 
