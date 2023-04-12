@@ -15,7 +15,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
 
-  const userId = getAuthUserId(req, res);
+  const userId = await getAuthUserId(req, res);
 
   switch (req.method) {
     case "GET":

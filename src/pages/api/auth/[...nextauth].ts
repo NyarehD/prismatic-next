@@ -5,10 +5,14 @@ import checkPassword from "../../../../lib/checkPassword";
 import prisma from "../../../../prisma/prisma";
 
 export const authOptions: NextAuthOptions = {
+  debug: true,
+  session: {
+    strategy: "jwt"
+  },
   providers: [
     CredentialsProvider({
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        username: { label: "Username", type: "text", placeholder: "UserName" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials, req) {
