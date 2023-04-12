@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import Joi from 'joi';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import prisma from '../../../../prisma/prisma';
+import getAuthUserId from '../../../../server_hooks/getAuthUserId';
 
 // Form Validation Schema
 const formSchema = Joi.object({
@@ -13,6 +14,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+
+  const userId = getAuthUserId(req, res);
+
   switch (req.method) {
     case "GET":
       break;
@@ -28,6 +32,11 @@ export default async function handler(
                 connect: {
                   id: value.categoryId
                 }
+              },
+              user: {
+                connect: {
+                  id: userId
+                }
               }
             },
           })
@@ -39,6 +48,8 @@ export default async function handler(
             }
           }
         }
+      } else {
+        return res.status(400).json(error);
       }
       break;
     default:
