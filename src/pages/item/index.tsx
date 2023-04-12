@@ -83,7 +83,7 @@ export default function Items({ items, pageCount, categories }: ItemProps) {
 
   // Edit a category
   const [editCategoryName, setEditCategoryName] = useState("")
-  const [editingCategoryId, setEditingCategoryId] = useState<number>()
+  const [editingCategoryId, setEditingCategoryId] = useState<number>(0)
 
   function updateCategoryModal(name: string, id: number) {
     setEditCategoryName(name);
