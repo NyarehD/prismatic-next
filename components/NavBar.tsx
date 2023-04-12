@@ -30,15 +30,17 @@ export default function NavBar() {
         <ul className="inline-flex">
           <li><Link href="/" className='btn btn-ghost hover:text-white'>Home</Link></li>
           <li><Link href="/user/users" className='btn btn-ghost hover:text-white'>Users</Link></li>
-          <li><Link href="/category" className='btn btn-ghost hover:text-white'>Category</Link></li>
-
           {
             (data) ?
-              <li><ProfileIcon /></li>
+              <>
+                <li><Link href="/category" className='btn btn-ghost hover:text-white'>Category</Link></li>
+                <li><Link href="/item" className='btn btn-ghost hover:text-white'>Item</Link></li>
+                <li><ProfileIcon /></li>
+              </>
               :
               <>
-                <li><Link href="/auth/register" className="btn btn-ghost">Register</Link></li>
-                <li><Link href="/auth/login" className="btn btn-ghost">Login</Link></li>
+                <li><Link href="/auth/register" className="btn btn-ghost hover:text-white">Register</Link></li>
+                <li><Link href="/auth/login" className="btn btn-ghost hover:text-white">Login</Link></li>
               </>
           }
           <li>
