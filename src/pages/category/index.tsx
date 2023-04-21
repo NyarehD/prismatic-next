@@ -2,13 +2,14 @@ import { Prisma } from "@prisma/client";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useRef, useState } from "react";
+import LocalTime from "../../../components/LocalTime";
 import Modal from "../../../components/Modal";
 import Pagination from "../../../components/Pagination";
 import Toast from "../../../components/Toast";
 import AddIcon from "../../../components/icons/AddIcon";
 import PencilIcon from "../../../components/icons/PencilIcon";
 import TrashIcon from "../../../components/icons/TrashIcon";
-import useChangeDateFormat from "../../../hooks/useChangeDateFormat";
+import useMounted from "../../../hooks/useMounted";
 import useToast from "../../../hooks/useToast";
 import prisma from "../../../prisma/prisma";
 import getAuthUser from "../../../server_hooks/getAuthUser";
@@ -29,6 +30,7 @@ interface Props {
 export default function Categories({ categories, pageCount }: Props) {
   const router = useRouter()
   const { setToast, ...toastState } = useToast()
+  const isMounted = useMounted()
 
   // Refs
   const modelCreateButtonRef = useRef<HTMLLabelElement>(null);
@@ -98,6 +100,7 @@ export default function Categories({ categories, pageCount }: Props) {
     }
   }
 
+
   return (
     <>
       <div className="flex justify-between mb-3">
@@ -111,7 +114,7 @@ export default function Categories({ categories, pageCount }: Props) {
             <tr>
               <th>id</th>
               <th>name</th>
-              <th>Total</th>
+              <th>Total Items</th>
               <th>Created At</th>
               <th>Updated At</th>
               <th>Actions</th>
@@ -123,8 +126,17 @@ export default function Categories({ categories, pageCount }: Props) {
                 <th>{category.id}</th>
                 <td>{category.name}</td>
                 <td>{category?._count?.item}</td>
-                <td>{category.createdAt}</td>
-                <td>{category.updatedAt}</td>
+                {isMounted ? <>
+                  <td>
+                    <LocalTime time={category.createdAt} />
+                  </td>
+                  <td>
+                    <LocalTime time={category.updatedAt} />
+                  </td>
+                </> : <>
+                  <td></td>
+                  <td></td>
+                </>}
                 <td>
                   <label htmlFor="category-update-modal" className="btn btn-square btn-sm btn-info mr-2" onClick={() => updateCategoryModal(category.name, category.id)} ref={modelUpdateButtonRef}><PencilIcon /></label>
                   <button className="btn btn-square btn-sm btn-error mr-2" onClick={() => deleteCategory(category.id)}><TrashIcon /></button>
@@ -171,20 +183,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: {
       userId: user?.id
     },
-  })
-
-  // Mutate date in categories
-  const modifiedCategories = categories.map(category => {
-    return {
-      ...category,
-      createdAt: useChangeDateFormat(category.createdAt),
-      updatedAt: useChangeDateFormat(category.updatedAt)
+    include: {
+      _count: {
+        select: {
+          item: true
+        }
+      }
     }
   })
 
   return {
     props: {
-      categories: JSON.parse(JSON.stringify(modifiedCategories)),
+      categories: JSON.parse(JSON.stringify(categories)),
       pageCount
     }
   }
